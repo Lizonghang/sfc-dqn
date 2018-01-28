@@ -90,5 +90,5 @@ class ViolentSFC:
 if __name__ == '__main__':
     sfc = ViolentSFC()
     sfc.select()
-    print sfc.get_mean_qoe()
-    print sfc.get_violent_error()
+    print 'Mean QoE:', sfc.get_mean_qoe()
+    print 'Error Count:', sfc.get_violent_error() / 100.0

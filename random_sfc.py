@@ -78,5 +78,5 @@ class RandomSFC:
 if __name__ == '__main__':
     sfc = RandomSFC()
     sfc.select()
-    print sfc.get_mean_qoe()
-    print sfc.get_random_error()
+    print 'Mean QoE:', sfc.get_mean_qoe()
+    print 'Error Count:', sfc.get_random_error() / 100.0

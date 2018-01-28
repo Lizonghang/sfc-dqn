@@ -25,4 +25,4 @@ if __name__ == '__main__':
         except IndexError:
             break
     print 'Mean QoE:', env.get_mean_qoe()
-    print 'Error Count:', error_counter
+    print 'Error Count:', float(error_counter) / env.num_requests
