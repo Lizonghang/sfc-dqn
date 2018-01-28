@@ -21,8 +21,8 @@ Try <code>python main.py</code>.
 * output.txt: Comparative data. Used for ploting qoe and error rate.
 * plot_qoe.py: Used to draw average QoE curve. Try <code>python plot_qoe.py</code>, it will load logs from output.txt and plot:
 
-![](figure_error.png)
+![](figure_QoE.png)
 
 * plot_error.py: Used to draw error rate curve. Try <code>python plot_error.py</code>, it will load logs from output.txt and plot:
 
-![](figure_QoE.png)
+![](figure_error.png)
