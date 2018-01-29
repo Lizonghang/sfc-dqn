@@ -1,6 +1,6 @@
 # sfc-dqn
 
-This repository is the tensorflow implementation of paper SFC-DQN.
+This repository is the tensorflow implementation of paper Reinforcement Learning based QoS/QoE-aware Service Function Chaining in Software-Driven 5G Slices.
 
 Following is an introduction to the files:
 
