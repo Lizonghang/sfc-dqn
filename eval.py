@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from dqn import DQN
 from env import VNFGroup
 import time
@@ -25,4 +28,4 @@ if __name__ == '__main__':
         except IndexError:
             break
     print 'Mean QoE:', env.get_mean_qoe()
-    print 'Error Count:', float(error_counter) / env.num_requests
+    print 'Error Rate:', float(error_counter) / env.num_requests

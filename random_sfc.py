@@ -15,6 +15,9 @@ class RandomSFC:
         self.total_qoe = 0.0
         self.error_counter = 0
 
+    def reset(self):
+        self.__init__()
+
     def set_sfc_requests(self, sfc_requests):
         self.sfc_requests = sfc_requests
 
@@ -26,57 +29,54 @@ class RandomSFC:
             for i in xrange(0, 4):
                 self.B[c[i+2], c[i+1], i] += c[0]
 
+    def check_B(self, c, B_):
+        for vnf_id in xrange(1, 5):
+            if self.B[c[vnf_id], c[vnf_id-1], vnf_id-1] < B_:
+                return False
+        return True
+
+    def check_D(self, c, D_):
+        d_sum = 0.0
+        for vnf_id in xrange(1, 5):
+            d_sum += self.D[c[vnf_id], c[vnf_id-1], vnf_id-1]
+        if d_sum > D_:
+            return 0, False
+        return d_sum, True
+
+    def allocate_B(self, c, B_):
+        for vnf_id in xrange(1, 5):
+            self.B[c[vnf_id], c[vnf_id-1], vnf_id-1] -= B_
+
     def select(self):
         [B_, D_] = self.sfc_requests.pop(0)
         while True:
-            # 随机释放
             self.random_release_sfc()
-            # 随机选择一条链
             c = [np.random.choice(5) for _ in xrange(5)]
-            # 标识为满足要求
-            flag = True
-            # 检查带宽是否满足要求
-            if flag:
-                for vnf_id in xrange(1, 5):
-                    if self.B[c[vnf_id], c[vnf_id-1], vnf_id-1] < B_:
-                        self.total_qoe -= 10
-                        flag = False
-                        break
-            # 检查时延是否满足要求
-            d_sum = 0.0
-            if flag:
-                for vnf_id in xrange(1, 5):
-                    d_sum += self.D[c[vnf_id], c[vnf_id-1], vnf_id-1]
-                if d_sum > D_:
+            if self.check_B(c, B_):
+                d_sum, flag = self.check_D(c, D_)
+                if flag:
+                    self.total_qoe += (100.0 / d_sum)
+                    self.allocate_B(c, B_)
+                    sfc = [B_]
+                    sfc += c
+                    self.running_sfc = np.concatenate([self.running_sfc, np.array([sfc])], axis=0)
+                else:
                     self.total_qoe -= 10
-                    flag = False
-            # 分配成功
-            if flag:
-                # 累和qoe
-                self.total_qoe += (100.0 / d_sum)
-                # 分配带宽
-                for vnf_id in xrange(1, 5):
-                    self.B[c[vnf_id], c[vnf_id-1], vnf_id-1] -= B_
-                # 记录资源分配
-                sfc = [B_]
-                sfc += c
-                self.running_sfc = np.concatenate([self.running_sfc, np.array([sfc])], axis=0)
-            else:
-                self.error_counter += 1
+                    self.error_counter += 1
             try:
                 [B_, D_] = self.sfc_requests.pop(0)
             except IndexError:
                 break
 
     def get_mean_qoe(self):
-        return self.total_qoe / 100
+        return self.total_qoe / 100.0
 
-    def get_random_error(self):
-        return self.error_counter
+    def get_error_rate(self):
+        return self.error_counter / 100.0
 
 
 if __name__ == '__main__':
     sfc = RandomSFC()
     sfc.select()
     print 'Mean QoE:', sfc.get_mean_qoe()
-    print 'Error Count:', sfc.get_random_error() / 100.0
+    print 'Error Rate:', sfc.get_error_rate()

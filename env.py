@@ -28,6 +28,7 @@ class VNFGroup:
         self.total_qoe = 0.0
 
     def reset(self, use_same_sfc_requests=False):
+        self.__init__()
         self.B = group_config.get_initialized_bandwidth()
         self.D = group_config.get_initialized_delay()
         self.S = None
@@ -36,16 +37,13 @@ class VNFGroup:
         else:
             self.sfc_requests = [[np.random.randint(self.B_min, self.B_max+1),
                                   np.random.randint(self.D_min, self.D_max+1)] for _ in xrange(self.num_requests)]
-        self.total_qoe = 0.0
 
     def start(self, B_, D_):
         self.B_ = B_
         self.D_ = D_
         self.c = []
         self.d_sum = 0.0
-        # 释放使用完毕的资源
         self.random_release_sfc()
-        # 初始化状态S
         self.S = np.concatenate([self.B,                        # 0-3
                                  np.ones([5, 5, 1])*self.B_,    # 4
                                  self.D,                        # 5-8
@@ -107,7 +105,6 @@ class VNFGroup:
                 reward = PUNISHMENT
                 done = True
                 info = {'id': 1, 'msg': 'FAIL: Bandwidth not enough.'}
-                # self.sfc_requests.append([self.B_, self.D_])
                 self.total_qoe += reward
                 return self.S, reward, done, info
 
@@ -126,7 +123,6 @@ class VNFGroup:
                 reward = PUNISHMENT
                 done = True
                 info = {'id': 2, 'msg': 'FAIL: Delay over constraint'}
-                # self.sfc_requests.append([self.B_, self.D_])
                 self.total_qoe += reward
                 return self.S, reward, done, info
 
@@ -161,7 +157,6 @@ class VNFGroup:
                 reward = PUNISHMENT
                 done = True
                 info = {'id': 1, 'msg': 'FAIL: Bandwidth not enough.'}
-                # self.sfc_requests.append([self.B_, self.D_])
                 self.total_qoe += reward
                 return self.S, reward, done, info
 
@@ -180,7 +175,6 @@ class VNFGroup:
                 reward = PUNISHMENT
                 done = True
                 info = {'id': 2, 'msg': 'FAIL: Delay over constraint'}
-                # self.sfc_requests.append([self.B_, self.D_])
                 self.total_qoe += reward
                 return self.S, reward, done, info
 

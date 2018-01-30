@@ -1,6 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 import tensorflow as tf
 
@@ -201,9 +199,9 @@ class DQN:
         if ckpt:
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
             self.saver.restore(self.sess, os.path.join(ckpt_dir, ckpt_name))
-            # print '[SUCCESS] Checkpoint loaded.'
+            print '[SUCCESS] Checkpoint loaded.'
         else:
-            print '[ERROR] No checkpoint found.'
+            print '[WARNING] No checkpoint found.'
 
 
 if __name__ == '__main__':
