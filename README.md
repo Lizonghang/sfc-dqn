@@ -12,7 +12,7 @@ Following is an introduction to the files:
 * eval.py: Evaluate the mean QoE and error rate of DQN alone, with 100 random generated sfc requests. Try <code>python eval.py</code> to see mean QoE and error rate. If run via cpu, the complete time of DQN might be longer.
 * random_sfc.py: Contrast algorithm realized by stochastic principle. Try <code>python random_sfc.py</code> to see mean QoE and error rate.
 * violent_sfc.py: Contrast algorithm realized by violence principle. Try <code>python violent_sfc.py</code> to see mean QoE and error rate.
-* main.py: Run DQN, Random, Violent with 100 random generated sfc requests several times, at the same time DQN Agent is training. During the training, output logs as bellow: 
+* main.py: Run DQN, Random, Violent with 100 random generated sfc requests several times, at the same time DQN Agent is training. During the training, output logs will append to output.txt: 
 ```
 (STEP1)QoS of Random, Error of Random, QoS of Violent, Error of Violent, QoS of DQN, Error of DQN
 (STEP2)QoS of Random, Error of Random, QoS of Violent, Error of Violent, QoS of DQN, Error of DQN
