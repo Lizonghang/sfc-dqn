@@ -30,13 +30,13 @@ class DQN:
         B: 768-1280M
         B_:16-256M
         D: 10-20ms
-        D_:60-100ms
+        D_:50-90ms
         d_sum:40-80ms
         """
         B = (s[..., :4] - 768.0) / 512.0
         B_ = (s[..., 4:5] - 16.0) / 240.0
         D = (s[..., 5:9] - 10.0) / 10.0
-        D_ = (s[..., 9:10] - 60.0) / 40.0
+        D_ = (s[..., 9:10] - 50.0) / 40.0
         d_sum = (s[..., 10:11] - 40.0) / 40.0
         other = s[..., 11:]
         return tf.concat([B, B_, D, D_, d_sum, other], axis=3)
@@ -52,36 +52,36 @@ class DQN:
 
         with tf.variable_scope('eval_net'):
             with tf.variable_scope('conv_net1'):
-                w1 = tf.get_variable('w1', [3, 3, 16, 32],
+                w1 = tf.get_variable('w1', [3, 3, 16, 64],
                                      initializer=w_initializer,
                                      collections=['eval_net', 'variables'])
-                b1 = tf.get_variable('b1', [32],
+                b1 = tf.get_variable('b1', [64],
                                      initializer=b_initializer,
                                      collections=['eval_net', 'variables'])
                 conv1 = tf.nn.conv2d(self.s_reshaped, w1, strides=[1, 1, 1, 1], padding='VALID')
                 h1 = tf.nn.relu(conv1 + b1)
 
             with tf.variable_scope('conv_net2'):
-                w2 = tf.get_variable('w2', [3, 3, 32, 64],
+                w2 = tf.get_variable('w2', [3, 3, 64, 128],
                                      initializer=w_initializer,
                                      collections=['eval_net', 'variables'])
-                b2 = tf.get_variable('b2', [64],
+                b2 = tf.get_variable('b2', [128],
                                      initializer=b_initializer,
                                      collections=['eval_net', 'variables'])
                 conv2 = tf.nn.conv2d(h1, w2, strides=[1, 1, 1, 1], padding='VALID')
-                h2 = tf.reshape(tf.nn.relu(conv2 + b2), [-1, 64])
+                h2 = tf.reshape(tf.nn.relu(conv2 + b2), [-1, 128])
 
             with tf.variable_scope('fc_net1'):
-                w3 = tf.get_variable('w3', [64, 32],
+                w3 = tf.get_variable('w3', [128, 256],
                                      initializer=w_initializer,
                                      collections=['eval_net', 'variables'])
-                b3 = tf.get_variable('b3', [32],
+                b3 = tf.get_variable('b3', [256],
                                      initializer=w_initializer,
                                      collections=['eval_net', 'variables'])
                 h3 = tf.nn.relu(tf.matmul(h2, w3) + b3)
 
             with tf.variable_scope('fc_net2'):
-                w4 = tf.get_variable('w4', [32, 5],
+                w4 = tf.get_variable('w4', [256, 5],
                                      initializer=w_initializer,
                                      collections=['eval_net', 'variables'])
                 b4 = tf.get_variable('b4', [5],
@@ -101,36 +101,36 @@ class DQN:
 
         with tf.variable_scope('target_net'):
             with tf.variable_scope('conv_net1'):
-                w1 = tf.get_variable('w1', [3, 3, 16, 32],
+                w1 = tf.get_variable('w1', [3, 3, 16, 64],
                                      initializer=w_initializer,
                                      collections=['target_net', 'variables'])
-                b1 = tf.get_variable('b1', [32],
+                b1 = tf.get_variable('b1', [64],
                                      initializer=b_initializer,
                                      collections=['target_net', 'variables'])
                 conv1 = tf.nn.conv2d(self.s_reshaped_, w1, strides=[1, 1, 1, 1], padding='VALID')
                 h1 = tf.nn.relu(conv1 + b1)
 
             with tf.variable_scope('conv_net2'):
-                w2 = tf.get_variable('w2', [3, 3, 32, 64],
+                w2 = tf.get_variable('w2', [3, 3, 64, 128],
                                      initializer=w_initializer,
                                      collections=['target_net', 'variables'])
-                b2 = tf.get_variable('b2', [64],
+                b2 = tf.get_variable('b2', [128],
                                      initializer=b_initializer,
                                      collections=['target_net', 'variables'])
                 conv2 = tf.nn.conv2d(h1, w2, strides=[1, 1, 1, 1], padding='VALID')
-                h2 = tf.reshape(tf.nn.relu(conv2 + b2), [-1, 64])
+                h2 = tf.reshape(tf.nn.relu(conv2 + b2), [-1, 128])
 
             with tf.variable_scope('fc_net1'):
-                w3 = tf.get_variable('w3', [64, 32],
+                w3 = tf.get_variable('w3', [128, 256],
                                      initializer=w_initializer,
                                      collections=['target_net', 'variables'])
-                b3 = tf.get_variable('b3', [32],
+                b3 = tf.get_variable('b3', [256],
                                      initializer=w_initializer,
                                      collections=['target_net', 'variables'])
                 h3 = tf.nn.relu(tf.matmul(h2, w3) + b3)
 
             with tf.variable_scope('fc_net2'):
-                w4 = tf.get_variable('w4', [32, 5],
+                w4 = tf.get_variable('w4', [256, 5],
                                      initializer=w_initializer,
                                      collections=['target_net', 'variables'])
                 b4 = tf.get_variable('b4', [5],

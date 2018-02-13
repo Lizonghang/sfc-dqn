@@ -5,6 +5,8 @@ import time
 
 group_config = VNFGroupConfig()
 
+P = 10.0
+
 
 class RandomSFC:
     def __init__(self):
@@ -55,13 +57,13 @@ class RandomSFC:
             if self.check_B(c, B_):
                 d_sum, flag = self.check_D(c, D_)
                 if flag:
-                    self.total_qoe += (100.0 / d_sum)
+                    self.total_qoe += np.log(B_) - P*np.exp(-(D_-d_sum)/10.0)
                     self.allocate_B(c, B_)
                     sfc = [B_]
                     sfc += c
                     self.running_sfc = np.concatenate([self.running_sfc, np.array([sfc])], axis=0)
                 else:
-                    self.total_qoe -= 10
+                    self.total_qoe -= P
                     self.error_counter += 1
             try:
                 [B_, D_] = self.sfc_requests.pop(0)

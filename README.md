@@ -25,14 +25,8 @@ Try <code>python main.py</code>.
 * output.txt: Comparative data generated during the training process. Used for ploting qoe and error rate.
 * plot\_qoe.py: Used to draw average QoE curve, smooth rate 0.1. Try <code>python plot\_qoe.py</code>, it will load logs from output.txt and plot:
 
-<div align="center"><img src="figure_QoE_1.png" width="640px" height="480px"></div>
+<div align="center"><img src="figure_QoE.png" width="640px" height="480px"></div>
 
 * plot\_error.py: Used to draw error rate curve, smooth rate 0.1. Try <code>python plot\_error.py</code>, it will load logs from output.txt and plot:
 
-<div align="center"><img src="figure_error_1.png" width="640px" height="480px"></div>
-
-After repeated retraining, we find a better result:
-
-<div align="center"><img src="figure_QoE_2.png" width="640px" height="480px"></div>
-
-<div align="center"><img src="figure_error_2.png" width="640px" height="480px"></div>
+<div align="center"><img src="figure_error.png" width="640px" height="480px"></div>

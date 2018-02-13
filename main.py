@@ -24,7 +24,7 @@ if __name__ == '__main__':
         # Voilent
         violent_sfc.set_sfc_requests(env.sfc_requests[:])
         violent_sfc.select()
-        # DQN
+        # DQN eval
         sfc_requests = env.sfc_requests[:]
         dqn_error = 0.0
         [B_, D_] = sfc_requests.pop(0)
@@ -32,6 +32,28 @@ if __name__ == '__main__':
             observation = env.start(B_, D_)
             for n in xrange(5):
                 action = agent.choose_action(observation, larger_greedy=1.0)
+                observation_, reward, done, info = env.step(action)
+                if info['id']:  dqn_error += 1
+                if done:  break
+                observation = observation_
+            try:
+                [B_, D_] = sfc_requests.pop(0)
+            except IndexError:
+                break
+        with open('output.txt', 'a') as f:
+            f.write('{0}, {1}, {2}, {3}, {4}, {5}\n'.format(
+                random_sfc.get_mean_qoe(), random_sfc.get_error_rate(),
+                violent_sfc.get_mean_qoe(), violent_sfc.get_error_rate(),
+                env.get_mean_qoe(), dqn_error/env.num_requests)
+            )
+        # DQN train
+        sfc_requests = env.sfc_requests[:]
+        env.reset(use_sfc_requests=sfc_requests)
+        [B_, D_] = sfc_requests.pop(0)
+        while True:
+            observation = env.start(B_, D_)
+            for n in xrange(5):
+                action = agent.choose_action(observation)
                 observation_, reward, done, info = env.step(action)
                 agent.store_transition(observation, action, reward, observation_)
                 if info['id']:  dqn_error += 1
@@ -43,9 +65,3 @@ if __name__ == '__main__':
             except IndexError:
                 break
         agent.save()
-        with open('output.txt', 'a') as f:
-            f.write('{0}, {1}, {2}, {3}, {4}, {5}\n'.format(
-                random_sfc.get_mean_qoe(), random_sfc.get_error_rate(),
-                violent_sfc.get_mean_qoe(), violent_sfc.get_error_rate(),
-                env.get_mean_qoe(), dqn_error/env.num_requests)
-            )

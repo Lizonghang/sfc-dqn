@@ -5,6 +5,8 @@ import time
 
 group_config = VNFGroupConfig()
 
+P = 10.0
+
 
 class ViolentSFC:
     def __init__(self):
@@ -63,7 +65,7 @@ class ViolentSFC:
                                 if self.check_B(c, B_):
                                     d_sum, flag = self.check_D(c, D_)
                                     if flag:
-                                        qoe = 100.0 / d_sum
+                                        qoe = np.log(B_) - P*np.exp(-(D_-d_sum)/10.0)
                                         if qoe > best_qoe:
                                             best_qoe = qoe
                                             best_c = c
@@ -75,7 +77,7 @@ class ViolentSFC:
                 sfc += best_c
                 self.running_sfc = np.concatenate([self.running_sfc, np.array([sfc])], axis=0)
             else:
-                self.total_qoe -= 10
+                self.total_qoe -= P
                 self.error_counter += 1
             try:
                 [B_, D_] = self.sfc_requests.pop(0)

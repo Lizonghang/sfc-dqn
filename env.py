@@ -5,7 +5,7 @@ from config import VNFGroupConfig
 
 group_config = VNFGroupConfig()
 
-PUNISHMENT = -10.0
+P = 10.0
 
 
 class VNFGroup:
@@ -18,7 +18,7 @@ class VNFGroup:
         self.B_min = 16          # 所需带宽范围最小值,单位MB
         self.B_max = 256         # 所需带宽范围最大值,单位MB
         self.D_min = 50          # 最大时延约束最小值,单位ms,>40ms
-        self.D_max = 90          # 最大时延约束最大值,单位ms,
+        self.D_max = 90          # 最大时延约束最大值,单位ms
 
         self.sfc_requests = None
         self.running_sfc = np.ndarray([0, 6], dtype=np.int32)  # [[B_,1,4,3,2,0]]
@@ -27,13 +27,13 @@ class VNFGroup:
 
         self.total_qoe = 0.0
 
-    def reset(self, use_same_sfc_requests=False):
+    def reset(self, use_sfc_requests=None):
         self.__init__()
         self.B = group_config.get_initialized_bandwidth()
         self.D = group_config.get_initialized_delay()
         self.S = None
-        if use_same_sfc_requests:
-            self.sfc_requests = group_config.get_test_sfc()
+        if use_sfc_requests:
+            self.sfc_requests = use_sfc_requests
         else:
             self.sfc_requests = [[np.random.randint(self.B_min, self.B_max+1),
                                   np.random.randint(self.D_min, self.D_max+1)] for _ in xrange(self.num_requests)]
@@ -102,7 +102,7 @@ class VNFGroup:
                                          np.zeros([5, 5, 1]),           # 13
                                          np.zeros([5, 5, 1]),           # 14
                                          np.zeros([5, 5, 1])], axis=2)  # 15
-                reward = PUNISHMENT
+                reward = -P
                 done = True
                 info = {'id': 1, 'msg': 'FAIL: Bandwidth not enough.'}
                 self.total_qoe += reward
@@ -120,7 +120,7 @@ class VNFGroup:
                                          np.zeros([5, 5, 1]),           # 13
                                          np.zeros([5, 5, 1]),           # 14
                                          np.zeros([5, 5, 1])], axis=2)  # 15
-                reward = PUNISHMENT
+                reward = -P
                 done = True
                 info = {'id': 2, 'msg': 'FAIL: Delay over constraint'}
                 self.total_qoe += reward
@@ -154,7 +154,7 @@ class VNFGroup:
                                          np.zeros([5, 5, 1]),           # 13
                                          np.zeros([5, 5, 1]),           # 14
                                          np.zeros([5, 5, 1])], axis=2)  # 15
-                reward = PUNISHMENT
+                reward = -P
                 done = True
                 info = {'id': 1, 'msg': 'FAIL: Bandwidth not enough.'}
                 self.total_qoe += reward
@@ -172,7 +172,7 @@ class VNFGroup:
                                          np.zeros([5, 5, 1]),           # 13
                                          np.zeros([5, 5, 1]),           # 14
                                          np.zeros([5, 5, 1])], axis=2)  # 15
-                reward = PUNISHMENT
+                reward = -P
                 done = True
                 info = {'id': 2, 'msg': 'FAIL: Delay over constraint'}
                 self.total_qoe += reward
@@ -195,7 +195,7 @@ class VNFGroup:
                                      np.zeros([5, 5, 1]),           # 13
                                      np.zeros([5, 5, 1]),           # 14
                                      np.zeros([5, 5, 1])], axis=2)  # 15
-            reward = 100.0 / self.d_sum     # 1.25~2.5
+            reward = np.log(self.B_) - P*np.exp(-(self.D_-self.d_sum)/10.0)
             done = True
             info = {'id': 0, 'msg': 'SUCCESS: Choose node {} from VNF{}. Complete a SFC request.'.format(action, vnf_id)}
             self.total_qoe += reward
