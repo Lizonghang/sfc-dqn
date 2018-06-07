@@ -1,3 +1,5 @@
 *.pyc
 .idea
 .DS_Store
+figure_error_1.png
+figure_QoE_1.png
